@@ -2,12 +2,17 @@ import { gql } from 'apollo-server-express';
 
 export const typeDefs = gql`
   type Query {
-    entities: [Entity!]!
+    entities(limit: Int!, offset: Int!): [Entity!]!
     entity(input: GetItemInput!): Entity
+    entityby(input: GetEntityInput!): [Entity]
+    entitiesbyrelationships(input: GetEntityInput!): [Entity]
     relationships: [Relationship!]!
     relationship(input: GetItemInput!): Relationship
+    relationshipsby(input: GetEntityInput!): [Relationship]
     classes: [Class!]!
     types(input: TypesInput!): [Type!]!
+    users: [User!]!
+    user(input: GetItemInput!): User
   }
 
   type Mutation {
@@ -17,10 +22,18 @@ export const typeDefs = gql`
     createRelationship(input: CreateRelationshipInput!): Relationship!
     deleteRelationship(input: DeleteRelationshipInput!): Boolean!
     updateRelationship(input: UpdateRelationshipInput!): Relationship!
+    createUser(input: CreateUserInput!): User!
+    deleteUser(input: DeleteUserInput!): Boolean!
+    updateUser(input: UpdateUserInput!): User!
   }
 
   input GetItemInput {
     _id: ID!
+  }
+
+  input GetEntityInput {
+    field: String!
+    filter: String!
   }
 
   input CreateEntityInput {
@@ -42,8 +55,9 @@ export const typeDefs = gql`
 
   input CreateRelationshipInput {
     displayName: String!
-    fromEntityID: ID!
+    fromEntityID: ID
     toEntityID: ID!
+    fromUserID: ID
   }
 
   input DeleteRelationshipInput {
@@ -53,8 +67,34 @@ export const typeDefs = gql`
   input UpdateRelationshipInput {
     _id: ID!
     displayName: String
-    fromEntityID: ID!
+    fromEntityID: ID
     toEntityID: ID!
+    fromUserID: ID
+  }
+
+  input CreateUserInput {
+    userName: String!
+  }
+
+  input DeleteUserInput {
+    _id: ID!
+  }
+
+  input UpdateUserInput {
+    _id: ID!
+    userName: String!
+  }
+
+  input DeleteRelationshipInput {
+    _id: ID!
+  }
+
+  input UpdateRelationshipInput {
+    _id: ID!
+    displayName: String
+    fromEntityID: ID
+    toEntityID: ID!
+    fromUserID: ID
   }
 
   input TypesInput {
@@ -81,6 +121,12 @@ export const typeDefs = gql`
     _id: ID!
     displayName: String!
     toEntityID: ID!
-    fromEntityID: ID!
+    fromEntityID: ID
+    fromUserID: ID
+  }
+
+  type User {
+    _id: ID!
+    userName: String!
   }
 `;

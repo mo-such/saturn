@@ -4,7 +4,7 @@ import fs from 'fs/promises';
 import path from 'path'
 import fsSync from 'fs';
 import { generateRelationships } from './generateRelationships';
-import { Entity, Relationship, Type } from '../types';
+import { Entity, Relationship, Type, User } from '../types';
 import { getClassesAndTypes } from './getClassesAndTypes';
 
 const formatEntities = (entities: Entity[]): string => {
@@ -16,7 +16,7 @@ const formatRelationships = (relationships: Relationship[]): string => {
   return relationships
     .map(
       (r) =>
-        `('${r._id}', '${r.displayName}', '${r.fromEntityID}', '${r.toEntityID}')`
+        `('${r._id}', '${r.displayName}', '${r.fromEntityID}', '${r.toEntityID}', '${r.fromUserID}')`
     )
     .join(',\n');
 };
@@ -31,11 +31,23 @@ const formatTypes = (types: Type[]): string => {
     .join(',\n');
 };
 
+// Format User data
+const formatUsers = (users: User[]): string => {
+  return users
+    .map((t) => `('${t._id}', '${t.userName}')`)
+    .join(',\n');
+};
+
 const exec = async () => {
   const entitiesRaw = await fs.readFile(path.resolve(__dirname, './entities.json'));
   const entities = JSON.parse(entitiesRaw.toString());
   const relationships = generateRelationships(entities);
   const { classes, types } = getClassesAndTypes(entities);
+
+  // Ingest user data
+  const usersRaw = await fs.readFile(path.resolve(__dirname, './users.json'));
+  const users = JSON.parse(usersRaw.toString());
+
   const filepath = './jupiterone.db';
 
   if (fsSync.existsSync(filepath)) {
@@ -52,6 +64,7 @@ const exec = async () => {
 
   db.get('PRAGMA foreign_keys = ON');
 
+  // Add User table to db
   db.exec(`
 create table entity (
   _id text primary key not null,
@@ -64,7 +77,8 @@ create table relationship (
   _id text primary key not null,
   displayName text not null,
   toEntityID text not null,
-  fromEntityID text not null
+  fromEntityID text,
+  fromUserID text
 );
 
 create table class (
@@ -76,6 +90,11 @@ create table type (
   parentClass text not null
 );
 
+create table user (
+  _id text primary key not null,
+  userName text not null
+);
+
 insert into entity (
   _id, displayName, _class, _type
 )
@@ -83,7 +102,7 @@ values
 ${formatEntities(entities)};
 
 insert into relationship(
-  _id, displayName, fromEntityID, toEntityID
+  _id, displayName, fromEntityID, toEntityID, fromUserID
 )
 values
 ${formatRelationships(relationships)};
@@ -94,6 +113,12 @@ insert into class(
 values
 ${formatClasses(classes)};
 
+insert into user(
+  _id, userName
+)
+values
+${formatUsers(users)};
+
 insert into type(
   displayName, parentClass
 )
@@ -101,7 +126,7 @@ values
 ${formatTypes(types)};
 `);
 
-  const tables = ['entity', 'relationship', 'class', 'type'];
+  const tables = ['entity', 'relationship', 'class', 'type', 'user'];
 
   tables.forEach((table) => {
     db.all(
