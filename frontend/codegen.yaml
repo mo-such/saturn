@@ -1,0 +1,10 @@
+overwrite: true
+documents: null
+generates:
+  src/types.generated.ts:
+    schema: ['../backend/src/schema.ts']
+    plugins:
+      - 'typescript-apollo-client-helpers'
+    config:
+      namingConvention:
+        enumValues: keep

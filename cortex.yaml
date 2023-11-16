@@ -1,0 +1,19 @@
+openapi: 3.0.1
+info:
+  title: Saturn Take Home Excercise
+  description: >-
+    The goals of this exercise are two-fold. First, we want to provide you with
+    an opportunity to work in a code-base similar to what you would be working
+    in if you were a member of the team. Hopefully this will help you decide if
+    the tech stack/style of code we use here is interesting to you or not.
+    Second, this will provide both of us an opportunity to evaluate how your
+    coding capabilities could possibly fit into the team here at JupiterOne. You
+    are expected to write production-quality code for this excercise.
+  x-cortex-git:
+    github:
+      repository: JupiterOne/saturn-take-home-excercise
+  x-cortex-owners:
+    - type: group
+      name: JupiterOne/saturn
+  x-cortex-service-groups: tier-4
+  x-cortex-tag: saturn-take-home-excercise

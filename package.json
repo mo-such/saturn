@@ -1,0 +1,24 @@
+{
+  "name": "saturn-take-home-excercise",
+  "version": "1.0.0",
+  "description": "The goals of this exercise are two-fold. First, we want to provide you with an opportunity to work in a code-base similar to what you would be working in if you were a member of the team. Hopefully this will help you decide if the tech stack/style of code we use here is interesting to you or not. Second, this will provide both of us an opportunity to evaluate how your coding capabilities could possibly fit into the team here at JupiterOne. You are expected to write production-quality code for this excercise.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/JupiterOne/saturn-take-home-excercise"
+  },
+  "license": "ISC",
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/JupiterOne/saturn-take-home-excercise/issues"
+  },
+  "homepage": "https://github.com/JupiterOne/saturn-take-home-excercise#readme",
+  "scripts": {
+    "prepare": "husky install"
+  },
+  "main": "server.ts",
+  "devDependencies": {
+    "husky": "^8.0.3",
+    "lint-staged": "^13.1.0",
+    "prettier": "^2.8.2"
+  }
+}
