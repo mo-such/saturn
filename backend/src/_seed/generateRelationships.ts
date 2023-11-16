@@ -22,6 +22,7 @@ export const generateRelationships = (entities: Entity[]): Relationship[] => {
         _id: v4(),
         toEntityID: entity._id,
         fromEntityID: user._id,
+        fromUserID: undefined,
       });
     }
   });

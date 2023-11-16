@@ -10,6 +10,7 @@ export const getClassesAndTypes = (entities: Entity[]) => {
   };
   entities.forEach((e) => {
     if (result.classes.indexOf(e._class) === -1) {
+      // Add Class of current entity to array if it does not exist
       result.classes.push(e._class);
     }
     if (
@@ -17,6 +18,7 @@ export const getClassesAndTypes = (entities: Entity[]) => {
         (r) => r.displayName === e._type && r.parentClass === e._class
       )
     ) {
+      // Add new Type to array if it does not exist
       result.types.push({ displayName: e._type, parentClass: e._class });
     }
   });

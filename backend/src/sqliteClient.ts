@@ -64,6 +64,130 @@ const readAll = async <T>(tableName: string): Promise<T[]> => {
   });
 };
 
+const readPage = async <T>(tableName: string, limit: number, offset: number): Promise<T[]> => {
+  const db = await initConnection();
+  return new Promise(async (resolve, reject) => {
+    db.all(
+      `
+      SELECT * FROM ${tableName} LIMIT ? OFFSET ?;
+    `,
+      [limit, offset],
+      (err, rows) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows as T[]);
+        }
+        db.close();
+      }
+    );
+  });
+};
+
+const readByFilter = async <T>(
+  tableName: string,
+  field: string,
+  filter: string
+): Promise<T[] | null> => {
+  const db = await initConnection();
+  return new Promise(async (resolve, reject) => {
+    db.all(
+      `
+      SELECT * FROM ${tableName} WHERE ${field} = ?;
+    `,
+      [filter],
+      (err, rows) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(rows as T[]);
+        }
+        db.close();
+      }
+    );
+  });
+};
+
+const readByFilters = async <T>(
+  tableName: string,
+  filters: (string | null | undefined)[]
+): Promise<T[] | null> => {
+  const db = await initConnection();
+
+  return new Promise(async (resolve, reject) => {
+    if (filters !== null) {
+      const placeholders = filters.map(() => '?').join(', ');
+
+      db.all(
+        `
+        SELECT * FROM ${tableName} WHERE _id IN (${placeholders});
+      `,
+        filters,
+        (err, rows) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(rows as T[]);
+          }
+          db.close();
+        }
+      );
+    } else {
+      // If filters is null or undefined, return null
+      resolve(null);
+      db.close();
+    }
+  });
+};
+
+const readByClass = async <T>(
+  tableName: string,
+  classValue: string
+): Promise<T | null> => {
+  const db = await initConnection();
+  return new Promise(async (resolve, reject) => {
+    db.all(
+      `
+      SELECT * FROM ${tableName} WHERE _class = ?;
+    `,
+      [classValue],
+      (err, rows) => {
+        if (err) {
+          reject(err);
+          db.close();
+        } else {
+          resolve((rows?.[0] as T) || null);
+          db.close();
+        }
+      }
+    );
+  });
+};
+
+const readByType = async <T>(
+  tableName: string,
+  typeValue: string
+): Promise<T | null> => {
+  const db = await initConnection();
+  return new Promise(async (resolve, reject) => {
+    db.all(
+      `
+      SELECT * FROM ${tableName} WHERE _type = ?;
+    `,
+      [typeValue],
+      (err, rows) => {
+        if (err) {
+          reject(err);
+          db.close();
+        } else {
+          resolve((rows?.[0] as T) || null);
+          db.close();
+        }
+      }
+    );
+  });
+};
+
 const create = async <T extends object>(
   tableName: string,
   item: T
@@ -151,6 +275,11 @@ const destroy = async <T>(
 export const sqliteClient = {
   read,
   readAll,
+  readPage,
+  readByClass,
+  readByType,
+  readByFilter,
+  readByFilters,
   create,
   getRawClient,
   destroy,
